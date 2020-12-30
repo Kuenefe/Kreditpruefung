@@ -1,5 +1,7 @@
 
 Kreditprüfung mit 4-Augen-Prinzip
+
+
 Ein Kreditantrag eines Kunden wird sofort genehmigt, wenn die Kreditsumme unterhalb der jedem
 Kunden zugeordneten Bonität liegt. Ansonsten werden zwei verschiedene Mitarbeiter beauftragt,
 eine Entscheidung vorzuschlagen; diese Vorschläge werden vom Vorgesetzten dieser Mitarbeiter
