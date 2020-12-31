@@ -16,6 +16,7 @@ public class MitarbeiterImpl extends UnicastRemoteObject implements Vorgesetzter
     private String nachname;
     private String vorname;
     private String geburtsdatum;
+    private Kreditantrag kreditantrag;
 
     // ------------
     // Konstruktoren
@@ -36,7 +37,7 @@ public class MitarbeiterImpl extends UnicastRemoteObject implements Vorgesetzter
 
     public void run() // TO BE IMPLEMENTED
     {
-        
+
 	}
 
 
@@ -44,18 +45,30 @@ public class MitarbeiterImpl extends UnicastRemoteObject implements Vorgesetzter
     // Interfaces Implementierung
     // ------------
 
-    public Vorschlag erstelleVorschlag() // TO BE IMPLEMENTED
+    public void erstelleVorschlag(Boolean vorschlag) throws Exception, RemoteException
     {
-        return null;
+        kreditantrag.vorschlagHinzufuegen(vorschlag, this);
+    }   
+
+    public void gemeinschaftlicheEntscheidungTreffen(Boolean edv, Boolean edg) // TO BE IMPLEMENTED
+    {
+        if(edv && edg)
+        {
+            this.kreditantrag.entscheidungHinzufuegen(true);
+        }
+        else
+        {
+            this.kreditantrag.entscheidungHinzufuegen(false);
+        }
     }
 
-    public boolean überprüfeVorschlag() // TO BE IMPLEMENTED
+    public void entscheidungTreffen(Boolean entscheidung)
     {
-        return false;
-    }        
+        this.kreditantrag.entscheidungHinzufuegen(entscheidung);
+    }
 
-    public boolean gemeinschaftlicheÜberprüfung(Vorschlag vorschlagDesVorgesetzten) // TO BE IMPLEMENTED
+    public void setKreditantrag(Kreditantrag kreditantrag)
     {
-        return false;
+        this.kreditantrag = kreditantrag;
     }
 }

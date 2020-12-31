@@ -11,8 +11,9 @@ public class ClientKunde {
     // ------------
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException
     {
+       
         Kunde barth = (Kunde) Naming.lookup("rmi://localhost:1099/KundeBarth");
-        int wunschsumme = 5; // Muss per Console Input eingegeben werden
+        int wunschsumme = 15; // Muss per Console Input eingegeben werden
         int antragsnummer = 1; // Muss von der Datenbank vorgegeben werden
         barth.erstelleAntrag(antragsnummer, wunschsumme);
 

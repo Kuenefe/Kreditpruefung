@@ -47,12 +47,20 @@ public class KundeImpl extends UnicastRemoteObject implements Kunde
         this.kreditantrag = tempAntrag;
     }
 
-    public String getName(){ return this.nachname;}
+    public String getName()
+    { 
+        return this.nachname;
+    }
 
-    public void antragGenehmigen()
+    public Kreditantrag getKreditantrag()
+    {
+        return this.kreditantrag;
+    }
+
+    public void antragGenehmigen(int laufzeit)
     {
         this.kreditantrag.setGenehmigtTrue();
-        Kredit tempKredit = new Kredit();
+        Kredit tempKredit = new Kredit(this.kreditantrag.getKreditantragsnummer(), this.kreditantrag.getWunschsumme(), laufzeit);
         this.kredit = tempKredit;
     }
 

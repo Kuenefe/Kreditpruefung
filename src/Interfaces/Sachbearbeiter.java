@@ -6,5 +6,5 @@ import java.rmi.RemoteException;
 
 public interface Sachbearbeiter extends Remote
 {
-    public abstract Vorschlag erstelleVorschlag() throws RemoteException;
+    public abstract void erstelleVorschlag(Boolean vorschlag) throws RemoteException, Exception;
 }

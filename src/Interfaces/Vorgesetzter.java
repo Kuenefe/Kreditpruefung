@@ -5,5 +5,5 @@ import java.rmi.RemoteException;
 
 public interface Vorgesetzter extends Remote
 {
-    public abstract boolean überprüfeVorschlag() throws RemoteException;
+    public abstract void entscheidungTreffen(Boolean entscheidung) throws RemoteException;
 }

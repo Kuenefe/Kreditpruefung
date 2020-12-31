@@ -1,6 +1,6 @@
 package Classes;
 
-public class Vorschlag 
+public class Entscheidung 
 {
     // ------------
     // Klassenattribute
@@ -12,7 +12,7 @@ public class Vorschlag
     // Konstruktoren
     // ------------
 
-    public Vorschlag(boolean entscheidung)
+    public Entscheidung(boolean entscheidung)
     {
         this.entscheidung = entscheidung;
     }
