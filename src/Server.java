@@ -1,7 +1,9 @@
-import Classes.KundeImpl;
-import Classes.MitarbeiterImpl;
+import classes.KundeImpl;
+import classes.MitarbeiterImpl;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
@@ -16,22 +18,34 @@ public class Server
     // ------------
     // Main Methode
     // ------------
-    public static void main(String[] args) throws RemoteException, AlreadyBoundException, MalformedURLException, AccessException, NotBoundException
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException, MalformedURLException, AccessException, NotBoundException, Exception
     {
         Registry reg;
         int p = 1099; 
         reg = LocateRegistry.createRegistry(p);
 
+
         // Kunde Objekt wird erstellt und "freigegeben"
-        KundeImpl kunde = new KundeImpl("Barth", "Thomas", "16-01-1991", 1, 10);
+        KundeImpl kunde = KundeImpl.dbGetKunde(1);
+
+
+        if(kunde.equals(null))
+        {
+            throw new Exception("Kunde existiert nicht"); // DatenbankeintragFehlt Exception einfügen!
+        }
+
+        System.out.println("Kunde: " + kunde.toString() + " wurde von der Datenbank geladen ...");
+
         Naming.bind("rmi://localhost:1099/KundeBarth", kunde);
-       
         System.out.println("Warte auf Kunde");
 
         // Bestätigung das Client fertig ist.
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
         // Bestätigung das Client fertig ist.        
+
+        kunde.getKreditantrag().dbInsertKreditantrag(kunde.getKundennummer());
+
 
         // Bonität wird überprüft
         if (kunde.ueberpruefeBonitaet()) // direkt durchjubeln
@@ -43,27 +57,58 @@ public class Server
         }
         else // erst überprüfen
         {
-            System.out.println("Warte auf Sachbearbeiter");
+            MitarbeiterImpl sachbearbeiterEins = MitarbeiterImpl.dbGetMitarbeiter(3);
 
-            MitarbeiterImpl sachbearbeiterEins = new MitarbeiterImpl("Marius", "Bützler", "12-05-1942", 1);
+            if(sachbearbeiterEins.equals(null))
+            {
+                throw new Exception("Sachbearbeiter eins existiert nicht"); // DatenbankeintragFehlt Exception einfügen!
+            }
+
+            System.out.println("Sachbearbeiter eins: " + sachbearbeiterEins.toString() + " wurde von der Datenbank geladen ...");
+
             sachbearbeiterEins.setKreditantrag(kunde.getKreditantrag());
             Naming.bind("rmi://localhost:1099/SachbearbeiterMarius", sachbearbeiterEins);
 
-            MitarbeiterImpl sachbearbeiterZwei = new MitarbeiterImpl("Emre", "Guney", "05-12-1924", 2);
+
+            MitarbeiterImpl sachbearbeiterZwei = MitarbeiterImpl.dbGetMitarbeiter(4);
+
+            if(sachbearbeiterEins.equals(null))
+            {
+                throw new Exception("Sachbearbeiter zwei existiert nicht"); // DatenbankeintragFehlt Exception einfügen!
+            }
+
+            System.out.println("Sachbearbeiter zwei: " + sachbearbeiterZwei.toString() + " wurde von der Datenbank geladen ...");
+            
             sachbearbeiterZwei.setKreditantrag(kunde.getKreditantrag());
             Naming.bind("rmi://localhost:1099/SachbearbeiterEmre", sachbearbeiterZwei);
 
+            System.out.println("Warte auf Sachbearbeiter");
+
+            // Sachbearbeiter treffen ihre Vorschläge            
             // Bestätigung das Client fertig ist.
             scanner.nextLine();
             // Bestätigung das Client fertig ist.
             
-            if(kunde.getKreditantrag().getWunschsumme() < 500000)
-            {
-                System.out.println("Warte auf Vorgesetzter");
 
-                MitarbeiterImpl vorgesetzter = new MitarbeiterImpl("Florian", "Eyring", "12-12-2001", 3);
+            sachbearbeiterEins.dbInsertVorschlag();
+            sachbearbeiterZwei.dbInsertVorschlag();
+
+
+            if(kunde.getKreditantrag().getWunschsumme() <= 500000)
+            {
+                MitarbeiterImpl vorgesetzter = MitarbeiterImpl.dbGetMitarbeiter(2);
+
+                if(vorgesetzter.equals(null))
+                {
+                    throw new Exception("Vorgesetzter existiert nicht"); // DatenbankeintragFehlt Exception einfügen!
+                }
+
+                System.out.println("Vorgesetzter: " + vorgesetzter.toString() + " wurde von der Datenbank geladen ...");
+
                 vorgesetzter.setKreditantrag(kunde.getKreditantrag());
                 Naming.bind("rmi://localhost:1099/Vorgesetzter", vorgesetzter);
+
+                System.out.println("Warte auf Vorgesetzter");
 
                 // Warten auf Vorgesetzter Antwort
                 // Bestätigung das Client fertig ist.
@@ -74,11 +119,20 @@ public class Server
             }
             else
             {
-                System.out.println("Warte auf Geschäftsführer");
+                MitarbeiterImpl geschaeftsfuehrer = MitarbeiterImpl.dbGetMitarbeiter(1);
 
-                MitarbeiterImpl geschaeftsfuehrer = new MitarbeiterImpl("Stefan", "Selmeczi", "02-02-2222", 4);
+                if(geschaeftsfuehrer.equals(null))
+                {
+                    throw new Exception("Geschäftsführer existiert nicht"); // DatenbankeintragFehlt Exception einfügen!
+                }
+
+                System.out.println("Geschäftsführer: " + geschaeftsfuehrer.toString() + " wurde von der Datenbank geladen ...");
+
+
                 geschaeftsfuehrer.setKreditantrag(kunde.getKreditantrag());
                 Naming.bind("rmi://localhost:1099/Geschäftsführer", geschaeftsfuehrer);
+
+                System.out.println("Warte auf Geschäftsführer");
 
                 // Bestätigung das Client fertig ist.
                 scanner.nextLine();
@@ -87,8 +141,7 @@ public class Server
                 Naming.unbind("rmi://localhost:1099/Geschäftsführer");
             }
 
-
-            if(kunde.getKreditantrag().getEntscheidung())
+            if(kunde.getKreditantrag().getEntscheidung() == true) // auch schreibbar: kunde.getKreditantrag().getEntscheidung()
             {
                 kunde.antragGenehmigen(3650);
 
@@ -101,7 +154,7 @@ public class Server
             }
             else
             {
-                System.out.println("Abgelehnt");
+                System.out.println("Der Kreditantrag wurde Abgelehnt");
                 // Kunde Rückmeldung geben
 
 
@@ -111,6 +164,6 @@ public class Server
             }
         }
 
-        System.exit(0);
+        System.exit(0); // Hier ist das Programm fertig und kann geschlossen werden
     }
 }

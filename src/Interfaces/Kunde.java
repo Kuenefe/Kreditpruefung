@@ -1,4 +1,4 @@
-package Interfaces;
+package interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -6,5 +6,5 @@ import java.rmi.RemoteException;
 public interface Kunde extends Remote
 {
     
-    public abstract void erstelleAntrag(int antragsnummer, int wunschsumme) throws RemoteException;
+    public abstract void erstelleAntrag(int wunschsumme) throws RemoteException;
 }

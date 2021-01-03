@@ -1,6 +1,6 @@
-package Classes;
+package classes;
 
-import Interfaces.DatabaseConnect;
+import interfaces.DatabaseConnect;
 
 public class Kredit implements DatabaseConnect
 {

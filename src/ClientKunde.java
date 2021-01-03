@@ -1,4 +1,4 @@
-import Interfaces.Kunde;
+import interfaces.Kunde;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -11,11 +11,9 @@ public class ClientKunde {
     // ------------
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException
     {
-       
         Kunde barth = (Kunde) Naming.lookup("rmi://localhost:1099/KundeBarth");
-        int wunschsumme = 15; // Muss per Console Input eingegeben werden
-        int antragsnummer = 1; // Muss von der Datenbank vorgegeben werden
-        barth.erstelleAntrag(antragsnummer, wunschsumme);
+        int wunschsumme = 1500000; // Muss per Console Input eingegeben werden
+        barth.erstelleAntrag(wunschsumme);
 
         // Implementierung das KundeClient fertig ist
     }

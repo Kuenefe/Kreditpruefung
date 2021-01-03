@@ -1,4 +1,5 @@
-import Interfaces.Geschäftsführer;
+
+import interfaces.Geschäftsführer;
 import java.rmi.Naming;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
@@ -12,6 +13,6 @@ public class ClientGeschaeftsfuehrer
     public static void main(String[] args)throws MalformedURLException, RemoteException, NotBoundException
     {
         Geschäftsführer geschäftsführer = (Geschäftsführer) Naming.lookup("rmi://localhost:1099/Geschäftsführer");
-        geschäftsführer.gemeinschaftlicheEntscheidungTreffen(true, true); // Eingabe vom Geschäftsführer nötig!
+        geschäftsführer.gemeinschaftlicheEntscheidungTreffen(false, true); // Eingabe vom Geschäftsführer nötig!
     }
 }
