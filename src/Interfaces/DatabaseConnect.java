@@ -3,8 +3,8 @@ package interfaces;
  
 public interface DatabaseConnect extends Runnable
 {
-    final String login = "appdevii";
-    final String passwort = "appdevmachtspass";
-    final String dbURL = "jdbc:mariadb://138.201.52.201/appdevii";
+    final String login = "root";
+    final String passwort = "";
+    final String dbURL = "jdbc:mariadb://127.0.0.1/appdevii";
     final String driver = "org.mariadb.jdbc.Driver";
 }
