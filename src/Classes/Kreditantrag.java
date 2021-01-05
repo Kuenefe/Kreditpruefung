@@ -2,6 +2,8 @@ package classes;
 
 import java.sql.*;
 import java.util.HashMap;
+
+import exceptions.ZuVieleVorschlaege;
 import interfaces.DatabaseConnect;
 
 public class Kreditantrag implements DatabaseConnect
@@ -12,7 +14,7 @@ public class Kreditantrag implements DatabaseConnect
     
     private int kreditantragsnummer;
     private Boolean genehmigt = false;
-    private int wunschsumme;
+    private int kreditsumme;
     private HashMap<MitarbeiterImpl, Vorschlag> vorschlaege;
     private Entscheidung entscheidung;
     
@@ -20,9 +22,9 @@ public class Kreditantrag implements DatabaseConnect
     // Konstruktoren
     // ------------
 
-    public Kreditantrag(int wunschsumme)
+    public Kreditantrag(int kreditsumme)
     {
-        this.wunschsumme = wunschsumme;
+        this.kreditsumme = kreditsumme;
         this.vorschlaege = new HashMap<>();
     }
     
@@ -30,13 +32,7 @@ public class Kreditantrag implements DatabaseConnect
     // Methoden
     // ------------
 
-    // Wenn genehmigt dann erstelle Kredit
-    public void setGenehmigtTrue() // Darf nur vom Server ausgeführt werden
-    {
-        this.genehmigt = true;
-    }
-
-    public void vorschlagHinzufuegen(Boolean entscheidung, MitarbeiterImpl m) throws Exception //Darf nur vom Sachbearbeiter ausgeführt werden
+    public void vorschlagHinzufuegen(Boolean entscheidung, MitarbeiterImpl m) throws ZuVieleVorschlaege //Darf nur vom Sachbearbeiter ausgeführt werden
     {
         if(vorschlaege.size() < 2)
         {
@@ -45,7 +41,7 @@ public class Kreditantrag implements DatabaseConnect
         }
         else
         {
-            throw new Exception("Zu viele Vorschläge vorhanden"); // NEUE EXCEPTION EINFÜGEN!! TBI
+            throw new ZuVieleVorschlaege("Zu viele Vorschläge vorhanden"); // NEUE EXCEPTION EINFÜGEN!! TBI
         }
     }
 
@@ -54,7 +50,25 @@ public class Kreditantrag implements DatabaseConnect
         this.entscheidung = new Entscheidung(entscheidung);
     }
 
-    public void dbInsertKreditantrag(int kundennummer)
+    public void gemeinschaftlicheEntscheidungHinzufuegen(Boolean entscheidung, int vorgesetztennummer)
+    {
+        this.entscheidung = new Entscheidung(entscheidung, vorgesetztennummer);
+    }
+
+    // ------------
+    // Interfaces Implementierung
+    // ------------
+
+    public void run() // TBI
+    {
+
+    }
+
+    // ------------
+    // Datenbankanbindungen
+    // ------------
+
+    public void dbInsertKreditantrag(int kundennummer) throws Exception
     {
         Connection verbindungZurDatenbank = null;
         
@@ -67,7 +81,7 @@ public class Kreditantrag implements DatabaseConnect
             String sql = "Insert into Kreditantrag(Kunden_Nummer, Kreditsumme) VALUES(?,?)";
             PreparedStatement ps = verbindungZurDatenbank.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, kundennummer);
-            ps.setInt(2, this.wunschsumme);
+            ps.setInt(2, this.kreditsumme);
 
             ps.executeQuery();
             //
@@ -77,33 +91,37 @@ public class Kreditantrag implements DatabaseConnect
                 this.kreditantragsnummer = rs.getInt(1);
             }
         }
-        catch(Exception aeussereException)
+        catch(Exception exception) // Hier werden alle Exceptions abgefangen, da alle gleich behandelt werden!
         {
-            aeussereException.printStackTrace();
+            throw exception;
         }
     }
 
-    public Boolean getEntscheidung()
+    // ------------
+    // Getter und Setter
+    // ------------
+
+    public Entscheidung getEntscheidung()
     {
-        return this.entscheidung.getEntscheidung();
+        return this.entscheidung;
     }
 
     public int getKreditantragsnummer(){
         return this.kreditantragsnummer;
     }
 
-    public int getWunschsumme()
+    public int getKreditsumme()
     {
-        return this.wunschsumme;
+        return this.kreditsumme;
     }
 
     public Boolean getVorschlag(MitarbeiterImpl mitarbeiter)
     {
         return vorschlaege.get(mitarbeiter).getEntscheidung();
     }
-
-    public void run() // TBI
+   
+    public void setGenehmigtTrue() // Darf nur vom Server ausgeführt werden
     {
-
+        this.genehmigt = true;
     }
 }

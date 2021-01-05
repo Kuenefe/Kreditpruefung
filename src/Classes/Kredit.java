@@ -16,23 +16,42 @@ public class Kredit implements DatabaseConnect
     // Konstruktoren
     // ------------
 
-    public Kredit(int kreditantragsnummer, int wunschsumme, int laufzeitTage)
+    public Kredit(int kreditantragsnummer, int kreditsumme, int laufzeitTage)
     {
-        this.kreditsumme = wunschsumme;
+        this.kreditsumme = kreditsumme;
         this.kreditnummer = kreditantragsnummer;
         this.laufzeitTage = laufzeitTage;
     }
-
-
 
 	// ------------
     // Methoden
     // ------------
     
+    // ------------
+    // Interfaces Implementierung
+    // ------------
 	public void run() // TO BE IMPLEMENTED
     {
-
+        
     }
-    
+
+    // ------------
+    // Getter und Setter
+    // ------------
+
+    public int getKreditantragsnummer()
+    {
+        return this.kreditnummer;
+    }
+
+    public int getLaufzeit()
+    {
+        return this.laufzeitTage;
+    }
+
+    public double getZinssatz()
+    {
+        return this.zinssatz;
+    }   
     
 }

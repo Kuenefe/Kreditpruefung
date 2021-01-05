@@ -17,6 +17,10 @@ public class Vorschlag
         this.entscheidung = entscheidung;
     }
 
+    // ------------
+    // Getter und Setter
+    // ------------
+
     public Boolean getEntscheidung()
     {
         return this.entscheidung;

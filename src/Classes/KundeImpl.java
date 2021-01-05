@@ -35,38 +35,17 @@ public class KundeImpl extends UnicastRemoteObject implements Kunde, DatabaseCon
     // ------------
     // Methoden
     // ------------
-
-    public void erstelleAntrag(int wunschsumme) throws RemoteException
-    {
-        Kreditantrag tempAntrag = new Kreditantrag(wunschsumme);
-        this.kreditantrag = tempAntrag;
-    }
-
-    public String getName()
-    { 
-        return this.nachname;
-    }
-
-    public Kreditantrag getKreditantrag()
-    {
-        return this.kreditantrag;
-    }
-
-    public int getKundennummer()
-    {
-        return this.kundennummer;
-    }
-
+    
     public void antragGenehmigen(int laufzeit)
     {
         this.kreditantrag.setGenehmigtTrue();
-        Kredit tempKredit = new Kredit(this.kreditantrag.getKreditantragsnummer(), this.kreditantrag.getWunschsumme(), laufzeit);
+        Kredit tempKredit = new Kredit(this.kreditantrag.getKreditantragsnummer(), this.kreditantrag.getKreditsumme(), laufzeit);
         this.kredit = tempKredit;
     }
 
     public Boolean ueberpruefeBonitaet()
     {
-        if(this.bonitaet > this.kreditantrag.getWunschsumme())
+        if(this.bonitaet > this.kreditantrag.getKreditsumme())
         {
             return true;
         }
@@ -75,10 +54,58 @@ public class KundeImpl extends UnicastRemoteObject implements Kunde, DatabaseCon
             return false;
         }
         
-        //return this.bonitaet > this.kreditantrag.getWunschsumme(); // Das gleiche Ergbnis
+        //return this.bonitaet > this.kreditantrag.getKreditsumme(); // Das gleiche Ergbnis
     }
 
-    public static KundeImpl dbGetKunde(int nummer) throws RemoteException
+    @Override
+    public String toString()
+    {
+        return this.nachname + ", " + this.vorname;
+    }
+
+    // ------------
+    // Interfaces Implementierung
+    // ------------
+
+    public void erstelleAntrag(int kreditsumme) throws RemoteException
+    {
+        Kreditantrag tempAntrag = new Kreditantrag(kreditsumme);
+        this.kreditantrag = tempAntrag;
+    }
+
+    public void run() // TO BE IMPLEMENTED
+    {
+        
+    }
+
+    // ------------
+    // Datenbankanbindungen
+    // ------------
+
+    public void dbInsertKredit() throws Exception
+    {
+        Connection verbindungZurDatenbank = null;
+        
+        try
+        {
+            Class.forName(driver);
+
+            verbindungZurDatenbank = DriverManager.getConnection(dbURL, login, passwort);
+
+            String sql = "Insert into Kredit(Kreditantrag_Nummer, Laufzeit, Zinssatz) VALUES(?,?,?) ";
+            PreparedStatement ps = verbindungZurDatenbank.prepareStatement(sql);
+            ps.setInt(1, this.kredit.getKreditantragsnummer());
+            ps.setInt(2, this.kredit.getLaufzeit());
+            ps.setDouble(3, this.kredit.getZinssatz());
+            ps.executeQuery();
+        }
+        catch(Exception exception) // Hier werden alle Exceptions abgefangen, da alle gleich behandelt werden!
+        {
+            throw exception;
+        }
+    }
+
+    public static KundeImpl dbGetKunde(int nummer) throws RemoteException, Exception
     {
         /* Verbindung zur Datenbank */
         Connection con = null;
@@ -107,31 +134,35 @@ public class KundeImpl extends UnicastRemoteObject implements Kunde, DatabaseCon
                     return new KundeImpl(nachname, vorname, nummer, bonitaet);
                 }
             }
-            catch(Exception e) // TO BE IMPLEMENTED
+            catch(Exception exception) // Hier werden alle Exceptions abgefangen, da alle gleich behandelt werden!
             {
-                e.printStackTrace();
+                throw exception;
             }
         }
-        catch (SQLException e) // TO BE IMPLEMENTED
+        catch(Exception exception) // Hier werden alle Exceptions abgefangen, da alle gleich behandelt werden!
         {
-            e.printStackTrace();
-        }
-        catch(ClassNotFoundException e) // TO BE IMPLEMENTED
-        {
-            e.printStackTrace();
+            throw exception;
         }
 
         return null;
     }
 
-    @Override
-    public String toString()
-    {
-        return this.nachname + ", " + this.vorname;
+    // ------------
+    // Getter und Setter
+    // ------------
+
+    public String getName()
+    { 
+        return this.nachname;
     }
 
-    public void run() // TO BE IMPLEMENTED
+    public Kreditantrag getKreditantrag()
     {
-        
-	}
+        return this.kreditantrag;
+    }
+
+    public int getKundennummer()
+    {
+        return this.kundennummer;
+    }
 }
